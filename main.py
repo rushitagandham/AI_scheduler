@@ -3,7 +3,8 @@
 import argparse
 from pathlib import Path
 
-from AI_scheduler.scheduler import build_schedule, render_schedule
+from AI_scheduler import ScheduledItem, build_schedule, render_schedule
+from AI_scheduler.excel import export_schedule_to_excel
 
 
 def parse_args() -> argparse.Namespace:
@@ -12,6 +13,11 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         help="Optional path to save the generated table as Markdown",
+    )
+    parser.add_argument(
+        "--excel",
+        type=Path,
+        help="Optional path to save the generated schedule as an Excel file",
     )
     return parser.parse_args()
 
@@ -24,7 +30,12 @@ def main() -> None:
     if args.output:
         args.output.write_text(output, encoding="utf-8")
         print(f"Saved schedule to {args.output}")
-    else:
+
+    if args.excel:
+        export_schedule_to_excel(schedule, args.excel)
+        print(f"Saved schedule to {args.excel}")
+
+    if not args.output:
         print(output)
 
 
