@@ -19,12 +19,12 @@ class ScheduledItem:
 
 def _level_block(level: int, start_week: int, start_lesson: int) -> List[ScheduledItem]:
     goals = {
-        1: "AIの講師サポートを活用しながら、単語と基本文型を90%以上正答する",
-        2: "音声入力を併用し、短文のアウトプットを安定させる",
-        3: "N4レベルの読解・聴解を通じて実践運用を確認する",
+        1: "Reach 90%+ accuracy on vocabulary and basic patterns with AI teaching support",
+        2: "Stabilize short-form output while using voice input",
+        3: "Validate practical skills through N4-level reading and listening",
     }
-    goal = goals.get(level, "次のレベルに進むための基礎を固める")
-    template = [("オンデマンド", 30), ("小テスト", 30)]
+    goal = goals.get(level, "Strengthen the fundamentals to move to the next level")
+    template = [("On-demand lesson", 30), ("Quiz", 30)]
 
     items: List[ScheduledItem] = []
     lesson_number = start_lesson
@@ -50,8 +50,8 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
                 level=level,
                 week=week,
                 day=f"Week{week}-Day{day_base + 3}",
-                activity="予備日 / AIレビュー",
-                module=f"L{level}-{lesson_number}復習",
+                activity="Buffer / AI review",
+                module=f"L{level}-{lesson_number} Review",
                 duration_minutes=30,
                 goal=goal,
             )
@@ -64,10 +64,10 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
             level=level,
             week=week,
             day=f"Week{week}-Day7",
-            activity="レベルアップテスト",
+            activity="Level-up test",
             module=f"Level{level}→Level{level + 1}",
             duration_minutes=60,
-            goal="学習到達度80%以上を確認して次のレベルへ進む",
+            goal="Confirm 80%+ mastery and advance to the next level",
         )
     )
     return items
@@ -105,7 +105,7 @@ def render_schedule(rows: Iterable[ScheduledItem]) -> str:
 
 def main() -> None:
     schedule = build_schedule()
-    print("AIによる自動スケジュール案 (モックアップ)")
+    print("AI-generated schedule draft (mockup)")
     print(render_schedule(schedule))
 
 

@@ -21,15 +21,14 @@ class ScheduledItem:
 
 def _level_block(level: int, start_week: int, start_lesson: int) -> List[ScheduledItem]:
     goals = {
-        1: "Achieve 90% accuracy in vocabulary and basic sentence patterns using AI tutor support",
-        2: "Stabilize short-sentence output using voice input",
-        3: "Confirm practical skills through N4-level reading and listening",
+        1: "Reach 90%+ accuracy on vocabulary and basic patterns with AI teaching support",
+        2: "Stabilize short-form output while using voice input",
+        3: "Validate practical skills through N4-level reading and listening",
     }
     goal = goals.get(level, "Strengthen the fundamentals to move to the next level")
-
     template = [
         ("On-demand lesson", 30),
-        ("Mini test", 30),
+        ("Quiz", 30),
     ]
 
     items: List[ScheduledItem] = []
@@ -57,7 +56,7 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
                 level=level,
                 week=week,
                 day=f"Week{week}-Day{day_base + 3}",
-                activity="Buffer day / AI review",
+                activity="Buffer / AI review",
                 module=f"L{level}-{lesson_number} Review",
                 duration_minutes=30,
                 goal=goal,
@@ -72,9 +71,9 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
             week=week,
             day=f"Week{week}-Day7",
             activity="Level-up test",
-            module=f"Level{level} → Level{level + 1}",
+            module=f"Level{level}→Level{level + 1}",
             duration_minutes=60,
-            goal="Confirm 80%+ achievement and advance to the next level",
+            goal="Confirm 80%+ mastery and advance to the next level",
         )
     )
 
@@ -96,20 +95,25 @@ def build_ai_schedule(
     focus_area: str = "balanced",
     weeks: int = 6,
 ) -> List[ScheduledItem]:
-    """Create a lightly personalized schedule tuned by simple AI-inspired heuristics."""
+    """Create a lightly personalized schedule tuned by simple AI-inspired heuristics.
+
+    The generator adjusts daily durations based on available minutes per week and
+    annotates goals with the requested focus area. It keeps the same tabular shape
+    as the mockup schedule so it can be exported the same way.
+    """
 
     if available_minutes_per_week <= 0:
         raise ValueError("available_minutes_per_week must be greater than zero")
 
     focus_goals = {
-        "conversation": "Prioritize voice input and conversation practice to automate output",
-        "reading": "Read short passages every week to improve vocabulary retention",
-        "exam": "Include mock tests to aim for score improvement",
-        "balanced": "Balance input and output to support stable learning",
+        "conversation": "Prioritize voice input and conversation practice to automate speaking output",
+        "reading": "Tackle short reading passages each week to reinforce vocabulary",
+        "exam": "Include practice tests to target score improvements",
+        "balanced": "Balance input and output to reinforce learning",
     }
     goal = focus_goals.get(focus_area, focus_goals["balanced"])
 
-    # At least 20 minutes/day, max 90 minutes/day.
+    # Give learners at least 20 minutes/day, cap at 90 minutes to keep sessions short.
     daily_minutes = min(90, max(20, available_minutes_per_week // 5))
 
     schedule: List[ScheduledItem] = []
@@ -117,29 +121,30 @@ def build_ai_schedule(
 
     for week in range(1, weeks + 1):
         level = 1 + (week - 1) // 2
-        week_goal = f"{goal} (AI recommended pace: {daily_minutes} min/day)"
+        week_goal = f"{goal} (AI suggested pace: {daily_minutes} min/day)"
 
+        # Five-day cadence that rotates learning, assessment, AI review, and practice.
         activities = [
             ("On-demand lesson", daily_minutes, f"L{level}-{lesson_number}"),
             (
-                "Mini test",
+                "Quiz",
                 max(20, daily_minutes - 10),
-                f"L{level}-{lesson_number} Check Test",
+                f"L{level}-{lesson_number} Check quiz",
             ),
             (
-                "AI review / Review",
+                "AI review / refresh",
                 min(30, daily_minutes),
-                f"L{level}-{lesson_number} Review Notes",
+                f"L{level}-{lesson_number} Review notes",
             ),
             (
                 "Focus practice",
                 daily_minutes,
-                f"{focus_area.capitalize()} Practice L{level}-{lesson_number}",
+                f"{focus_area.capitalize()} practice L{level}-{lesson_number}",
             ),
             (
                 "Integrated check",
                 min(60, daily_minutes + 10),
-                f"L{level}-{lesson_number} Integrated Exercise",
+                f"L{level}-{lesson_number} Integrated exercise",
             ),
         ]
 

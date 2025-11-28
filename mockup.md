@@ -1,36 +1,36 @@
-# 自動スケジュール モックアップ
+# Automated schedule mockup
 
-クライアント要望をもとに、AIが学習計画を自動生成し共有するためのモックアップをまとめました。オンライン授業日程と課題提出日を固定したうえで、オンデマンド視聴・小テスト・復習・レベルアップテストを組み合わせています。
+This document sketches a mockup where AI automatically builds and shares a learning plan based on client requirements. It fixes online class dates and assignment deadlines, then mixes on-demand viewing, quizzes, review, and level-up checks.
 
-## コンセプト
-- 学習目標と到達基準（90%以上の正答、AIによるリマインド）をレベルごとに設定
-- 1日2コマ（各30分）を基本とした進捗ペースをAIが自動提案
-- 「今日の課題」「今日のコンテンツ」を自動通知し、提出遅延は教師に同報
-- 音声入力とチャット質問を組み合わせ、英語・中国語のサポートも想定
+## Concept
+- Define learning goals and success criteria (90%+ accuracy, AI reminders) per level
+- Propose a baseline pace of two 30-minute blocks per day
+- Auto-notify "Today's tasks" and "Today's content" and copy instructors on late submissions
+- Combine voice input with chat questions, with English/Chinese support in mind
 
-## スケジュール出力イメージ
-`python main.py` を実行すると、以下のようなテーブルが生成されます。
+## Schedule output example
+Running `python main.py` produces a table like this:
 
 ```
-AIによる自動スケジュール案 (モックアップ)
+AI-generated schedule draft (mockup)
 Level | Week | Day | Activity | Module | Duration(min) | Goal
 --- | --- | --- | --- | --- | --- | ---
-1 | 1 | Week1-Day1 | オンデマンド | L1-1 | 30 | AIの講師サポートを活用しながら、単語と基本文型を90%以上正答する
-1 | 1 | Week1-Day2 | 小テスト | L1-1 | 30 | AIの講師サポートを活用しながら、単語と基本文型を90%以上正答する
-1 | 1 | Week1-Day3 | 予備日 / AIレビュー | L1-1復習 | 30 | AIの講師サポートを活用しながら、単語と基本文型を90%以上正答する
+1 | 1 | Week1-Day1 | On-demand lesson | L1-1 | 30 | Reach 90%+ accuracy on vocabulary and basic patterns with AI teaching support
+1 | 1 | Week1-Day2 | Quiz | L1-1 | 30 | Reach 90%+ accuracy on vocabulary and basic patterns with AI teaching support
+1 | 1 | Week1-Day3 | Buffer / AI review | L1-1 Review | 30 | Reach 90%+ accuracy on vocabulary and basic patterns with AI teaching support
 ...
 ```
 
-## 画面イメージ（テキスト）
-- **今日の課題**: 「オンデマンド L1-2 を30分視聴」 / 期限: 23:59 / 遅延時は教師にメール
-- **今日のオンライン授業**: 19:00-19:30 予約済み Zoom リンクを表示
-- **AI質問チャット**: 日本語・英語・中国語で質問可能。音声入力ボタンを配置
-- **通知**: 課題未完了のまま期限が近い場合、LINE/メールで「あと◯分で締切」のリマインド
+## Screen ideas (text-only)
+- **Today's task**: "Watch On-demand L1-2 for 30 minutes" / Due: 23:59 / Email instructor if late
+- **Today's online class**: 19:00-19:30 with a prebooked Zoom link
+- **AI Q&A chat**: Ask questions in Japanese, English, or Chinese with a voice-input button
+- **Notifications**: Remind via LINE/email when deadlines approach and tasks remain incomplete
 
-## クライアントへの説明ポイント
-1. **固定枠と自動補完**: 授業日の枠を固定し、残余時間をAIが自動でオンデマンド/小テスト/復習に割り当て
-2. **進捗アラート**: 期限超過や低正答率を検知して教師・学習者双方に通知
-3. **柔軟なリスケ**: 予定変更時はドラッグ&ドロップで再配置し、AIが最適化案を再計算
-4. **エビデンス**: 小テスト正答率・視聴完了ログ・質問履歴をレポート出力
+## Client talking points
+1. **Fixed slots plus auto-fill**: Lock class-day slots and let AI allocate remaining time to on-demand/quiz/review
+2. **Progress alerts**: Detect overdue work or low scores and notify both instructors and learners
+3. **Flexible rescheduling**: Drag-and-drop changes trigger a recalculated AI proposal
+4. **Evidence**: Export reports for quiz accuracy, viewing completion, and question history
 
-このモックアップは、クライアントへのデモ資料や画面プロトタイピングのたたき台として活用できます。
+Use this mockup as a starting point for client demos or screen prototyping.
