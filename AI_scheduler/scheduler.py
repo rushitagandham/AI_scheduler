@@ -64,6 +64,7 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
         )
 
         lesson_number += 1
+
     items.append(
         ScheduledItem(
             level=level,

@@ -16,7 +16,6 @@ class ScheduledItem:
 
     def to_row(self) -> dict:
         """Return a dict representation for export or JSON serialization."""
-
         return asdict(self)
 
 
@@ -34,6 +33,7 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
 
     items: List[ScheduledItem] = []
     lesson_number = start_lesson
+
     for block_index in range(3):
         week = start_week + (block_index // 2)
         day_base = (block_index % 2) * 3
@@ -64,6 +64,7 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
         )
 
         lesson_number += 1
+
     items.append(
         ScheduledItem(
             level=level,
@@ -75,6 +76,7 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
             goal="Confirm 80%+ mastery and advance to the next level",
         )
     )
+
     return items
 
 
