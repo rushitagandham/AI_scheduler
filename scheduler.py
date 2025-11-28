@@ -88,6 +88,82 @@ def build_schedule() -> List[ScheduledItem]:
     return schedule
 
 
+def build_ai_schedule(
+    available_minutes_per_week: int = 180,
+    focus_area: str = "balanced",
+    weeks: int = 6,
+) -> List[ScheduledItem]:
+    """Create a lightly personalized schedule tuned by simple AI-inspired heuristics.
+
+    The generator adjusts daily durations based on available minutes per week and
+    annotates goals with the requested focus area. It keeps the same tabular shape
+    as the mockup schedule so it can be exported the same way.
+    """
+
+    if available_minutes_per_week <= 0:
+        raise ValueError("available_minutes_per_week must be greater than zero")
+
+    focus_goals = {
+        "conversation": "音声入力と会話練習を優先し、アウトプットの自動化を目指す",
+        "reading": "短い読解パッセージを毎週こなし、語彙の定着を高める",
+        "exam": "模擬問題を取り入れてスコアアップを狙う",
+        "balanced": "インプットとアウトプットのバランスを取りながら定着を図る",
+    }
+    goal = focus_goals.get(focus_area, focus_goals["balanced"])
+
+    # Give learners at least 20 minutes/day, cap at 90 minutes to keep sessions short.
+    daily_minutes = min(90, max(20, available_minutes_per_week // 5))
+
+    schedule: List[ScheduledItem] = []
+    lesson_number = 1
+
+    for week in range(1, weeks + 1):
+        level = 1 + (week - 1) // 2
+        week_goal = f"{goal}（AI推奨ペース: {daily_minutes}分/日）"
+
+        # Five-day cadence that rotates learning, assessment, AI review, and practice.
+        activities = [
+            ("オンデマンド", daily_minutes, f"L{level}-{lesson_number}"),
+            (
+                "小テスト",
+                max(20, daily_minutes - 10),
+                f"L{level}-{lesson_number} 確認テスト",
+            ),
+            (
+                "AIレビュー / 復習",
+                min(30, daily_minutes),
+                f"L{level}-{lesson_number} 復習ノート",
+            ),
+            (
+                "フォーカス練習",
+                daily_minutes,
+                f"{focus_area.capitalize()}練習 L{level}-{lesson_number}",
+            ),
+            (
+                "統合チェック",
+                min(60, daily_minutes + 10),
+                f"L{level}-{lesson_number} 統合演習",
+            ),
+        ]
+
+        for day_index, (activity, minutes, module) in enumerate(activities, start=1):
+            schedule.append(
+                ScheduledItem(
+                    level=level,
+                    week=week,
+                    day=f"Week{week}-Day{day_index}",
+                    activity=activity,
+                    module=module,
+                    duration_minutes=minutes,
+                    goal=week_goal,
+                )
+            )
+
+        lesson_number += 1
+
+    return schedule
+
+
 def render_schedule(rows: Iterable[ScheduledItem]) -> str:
     """Render the schedule as a Markdown-friendly table."""
 
@@ -112,4 +188,9 @@ def render_schedule(rows: Iterable[ScheduledItem]) -> str:
     return "\n".join(lines)
 
 
-__all__ = ["ScheduledItem", "build_schedule", "render_schedule"]
+__all__ = [
+    "ScheduledItem",
+    "build_ai_schedule",
+    "build_schedule",
+    "render_schedule",
+]
