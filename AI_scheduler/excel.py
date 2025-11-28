@@ -3,9 +3,6 @@
 from pathlib import Path
 from typing import Iterable
 
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-
 from .scheduler import ScheduledItem
 
 
@@ -17,6 +14,9 @@ def export_schedule_to_excel(rows: Iterable[ScheduledItem], path: Path) -> None:
         path: Location for the resulting ``.xlsx`` file. Parent directories are
             created automatically.
     """
+
+    from openpyxl import Workbook
+    from openpyxl.utils import get_column_letter
 
     workbook = Workbook()
     sheet = workbook.active
