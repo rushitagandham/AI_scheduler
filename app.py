@@ -34,6 +34,8 @@ def _to_dataframe(items: Iterable[ScheduledItem], start: date) -> pd.DataFrame:
         event_date = start + timedelta(days=(item.week - 1) * 7 + day_number - 1)
         start_at = datetime.combine(event_date, time(hour=9))
         end_at = start_at + timedelta(minutes=item.duration_minutes)
+        full_day_start = datetime.combine(event_date, time.min)
+        full_day_end = full_day_start + timedelta(days=1)
 
         rows.append(
             {
@@ -47,6 +49,8 @@ def _to_dataframe(items: Iterable[ScheduledItem], start: date) -> pd.DataFrame:
                 "Goal": item.goal,
                 "Start": start_at,
                 "End": end_at,
+                "Full-day start": full_day_start,
+                "Full-day end": full_day_end,
                 "Day number": day_number,
             }
         )
@@ -77,6 +81,46 @@ def _render_calendar(df: pd.DataFrame) -> None:
     )
     fig.update_yaxes(autorange="reversed")
     fig.update_layout(margin=dict(l=20, r=20, t=20, b=20))
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _render_month_view(df: pd.DataFrame) -> None:
+    """Render a month-style view with full-day blocks per item like a Gantt chart."""
+
+    if df.empty:
+        st.info("No schedule items to display.")
+        return
+
+    month_df = df.copy()
+    month_df["Lane"] = month_df["Level"].apply(lambda lvl: f"Level {lvl}")
+
+    fig = px.timeline(
+        month_df,
+        x_start="Full-day start",
+        x_end="Full-day end",
+        y="Lane",
+        color="Activity",
+        text="Module",
+        hover_data={
+            "Date": "|%b %d",
+            "Goal": True,
+            "Duration (min)": True,
+            "Day": True,
+        },
+    )
+    fig.update_traces(textposition="inside", insidetextanchor="middle", textfont_size=11)
+    fig.update_yaxes(autorange="reversed")
+    fig.update_xaxes(
+        dtick="D1",
+        tickformat="%b %d",
+        showgrid=True,
+        gridcolor="#f0f2f6",
+    )
+    fig.update_layout(
+        margin=dict(l=20, r=20, t=20, b=20),
+        legend_title_text="Activity",
+        bargap=0.1,
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -132,7 +176,19 @@ def main() -> None:
     df = _to_dataframe(schedule, start_date)
 
     st.subheader("Calendar")
-    _render_calendar(df)
+    calendar_mode = st.radio(
+        "Calendar style",
+        ["Daily timeline", "Month-style blocks"],
+        horizontal=True,
+        help=(
+            "Switch between a precise daily timeline and a month-style strip chart "
+            "similar to a project plan."
+        ),
+    )
+    if calendar_mode == "Month-style blocks":
+        _render_month_view(df)
+    else:
+        _render_calendar(df)
 
     st.subheader("Daily schedule")
     _render_table(df)
