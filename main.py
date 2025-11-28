@@ -50,10 +50,10 @@ def main() -> None:
             available_minutes_per_week=args.minutes_per_week,
             focus_area=args.focus,
         )
-        title = "AIパーソナライズ版スケジュール"
+        title = "AI Personalized Schedule"
     else:
         schedule = build_schedule()
-        title = "AIによる自動スケジュール案 (モックアップ)"
+        title = "AI Auto-Generated Schedule (Mockup)"
 
     output = f"{title}\n" + render_schedule(schedule)
 

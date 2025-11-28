@@ -16,24 +16,25 @@ class ScheduledItem:
 
     def to_row(self) -> dict:
         """Return a dict representation for export or JSON serialization."""
-
         return asdict(self)
 
 
 def _level_block(level: int, start_week: int, start_lesson: int) -> List[ScheduledItem]:
     goals = {
-        1: "AIの講師サポートを活用しながら、単語と基本文型を90%以上正答する",
-        2: "音声入力を併用し、短文のアウトプットを安定させる",
-        3: "N4レベルの読解・聴解を通じて実践運用を確認する",
+        1: "Achieve 90% accuracy in vocabulary and basic sentence patterns using AI tutor support",
+        2: "Stabilize short-sentence output using voice input",
+        3: "Confirm practical skills through N4-level reading and listening",
     }
-    goal = goals.get(level, "次のレベルに進むための基礎を固める")
+    goal = goals.get(level, "Strengthen the fundamentals to move to the next level")
+
     template = [
-        ("オンデマンド", 30),
-        ("小テスト", 30),
+        ("On-demand lesson", 30),
+        ("Mini test", 30),
     ]
 
     items: List[ScheduledItem] = []
     lesson_number = start_lesson
+
     for block_index in range(3):
         week = start_week + (block_index // 2)
         day_base = (block_index % 2) * 3
@@ -56,25 +57,27 @@ def _level_block(level: int, start_week: int, start_lesson: int) -> List[Schedul
                 level=level,
                 week=week,
                 day=f"Week{week}-Day{day_base + 3}",
-                activity="予備日 / AIレビュー",
-                module=f"L{level}-{lesson_number}復習",
+                activity="Buffer day / AI review",
+                module=f"L{level}-{lesson_number} Review",
                 duration_minutes=30,
                 goal=goal,
             )
         )
 
         lesson_number += 1
+
     items.append(
         ScheduledItem(
             level=level,
             week=week,
             day=f"Week{week}-Day7",
-            activity="レベルアップテスト",
-            module=f"Level{level}→Level{level + 1}",
+            activity="Level-up test",
+            module=f"Level{level} → Level{level + 1}",
             duration_minutes=60,
-            goal="学習到達度80%以上を確認して次のレベルへ進む",
+            goal="Confirm 80%+ achievement and advance to the next level",
         )
     )
+
     return items
 
 
@@ -93,25 +96,20 @@ def build_ai_schedule(
     focus_area: str = "balanced",
     weeks: int = 6,
 ) -> List[ScheduledItem]:
-    """Create a lightly personalized schedule tuned by simple AI-inspired heuristics.
-
-    The generator adjusts daily durations based on available minutes per week and
-    annotates goals with the requested focus area. It keeps the same tabular shape
-    as the mockup schedule so it can be exported the same way.
-    """
+    """Create a lightly personalized schedule tuned by simple AI-inspired heuristics."""
 
     if available_minutes_per_week <= 0:
         raise ValueError("available_minutes_per_week must be greater than zero")
 
     focus_goals = {
-        "conversation": "音声入力と会話練習を優先し、アウトプットの自動化を目指す",
-        "reading": "短い読解パッセージを毎週こなし、語彙の定着を高める",
-        "exam": "模擬問題を取り入れてスコアアップを狙う",
-        "balanced": "インプットとアウトプットのバランスを取りながら定着を図る",
+        "conversation": "Prioritize voice input and conversation practice to automate output",
+        "reading": "Read short passages every week to improve vocabulary retention",
+        "exam": "Include mock tests to aim for score improvement",
+        "balanced": "Balance input and output to support stable learning",
     }
     goal = focus_goals.get(focus_area, focus_goals["balanced"])
 
-    # Give learners at least 20 minutes/day, cap at 90 minutes to keep sessions short.
+    # At least 20 minutes/day, max 90 minutes/day.
     daily_minutes = min(90, max(20, available_minutes_per_week // 5))
 
     schedule: List[ScheduledItem] = []
@@ -119,30 +117,29 @@ def build_ai_schedule(
 
     for week in range(1, weeks + 1):
         level = 1 + (week - 1) // 2
-        week_goal = f"{goal}（AI推奨ペース: {daily_minutes}分/日）"
+        week_goal = f"{goal} (AI recommended pace: {daily_minutes} min/day)"
 
-        # Five-day cadence that rotates learning, assessment, AI review, and practice.
         activities = [
-            ("オンデマンド", daily_minutes, f"L{level}-{lesson_number}"),
+            ("On-demand lesson", daily_minutes, f"L{level}-{lesson_number}"),
             (
-                "小テスト",
+                "Mini test",
                 max(20, daily_minutes - 10),
-                f"L{level}-{lesson_number} 確認テスト",
+                f"L{level}-{lesson_number} Check Test",
             ),
             (
-                "AIレビュー / 復習",
+                "AI review / Review",
                 min(30, daily_minutes),
-                f"L{level}-{lesson_number} 復習ノート",
+                f"L{level}-{lesson_number} Review Notes",
             ),
             (
-                "フォーカス練習",
+                "Focus practice",
                 daily_minutes,
-                f"{focus_area.capitalize()}練習 L{level}-{lesson_number}",
+                f"{focus_area.capitalize()} Practice L{level}-{lesson_number}",
             ),
             (
-                "統合チェック",
+                "Integrated check",
                 min(60, daily_minutes + 10),
-                f"L{level}-{lesson_number} 統合演習",
+                f"L{level}-{lesson_number} Integrated Exercise",
             ),
         ]
 
